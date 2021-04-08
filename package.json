@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "start": "browser-sync --watch"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.26.14"
+  }
+}

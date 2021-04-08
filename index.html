@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Test</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <span>test foo</span>
+      <span>John Doe is here</span>
+      <span>This is fun</span>
+      <span>Hallellujah I like apples</span>
+      <span>Where's my nachos?</span>
+    </div>
+  </body>
+  <script>
+    const container = document.querySelector(".container");
+    window.addEventListener("resize", handleWidthChange);
+    window.addEventListener("load", handleWidthChange);
+
+    function handleWidthChange() {
+      const spans = [...document.querySelectorAll("span")];
+      const spanLengths = spans.map((span) => span.offsetWidth);
+      let lines = [[]];
+      let currLine = 0;
+      let countWidth = 0;
+      spanLengths.forEach((len, ind) => {
+        countWidth += len + 38.31;
+        const span = spans[ind];
+        if (countWidth <= container.clientWidth) {
+          lines[currLine].push(span);
+        } else {
+          countWidth = len + 38.31;
+          currLine += 1;
+          lines.push([span]);
+        }
+      });
+      lines.forEach((line) => {
+        line.forEach((span, ind) => {
+          if (ind === line.length - 1) {
+            span.classList.remove("has-delim");
+          } else {
+            line[ind].classList.add("has-delim");
+          }
+        });
+      });
+      const newHtml = lines.reduce((acc, line) => {
+        const lineHtmlStrings = line.map((ele) => ele.outerHTML);
+        const lineHtml =
+          '<div class="row">' + lineHtmlStrings.join("") + "</div>";
+        acc += lineHtml;
+        return acc;
+      }, "");
+      container.innerHTML = newHtml;
+    }
+  </script>
+</html>
