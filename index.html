@@ -16,13 +16,13 @@
   <script>
     const BULLET_WIDTH = 40;
     const container = document.querySelector(".container");
-    let lastWidth = 0;
 
-    const rerenderDots = () => {
+    const renderDots = ()  => {
       const spans = [...document.querySelectorAll("span")];
       const spanLengths = spans.map((span) => span.offsetWidth);
       let countWidth = 0;
       const lines = spans.reduce((acc, span, ind) => {
+        span.classList.remove("has-delim");
         const len = spanLengths[ind];
         countWidth += len + BULLET_WIDTH;
         if (countWidth <= container.clientWidth) {
@@ -33,49 +33,23 @@
         }
         return acc
       }, [[]]);
-      lines.forEach((line) => {
-        line.forEach((span, ind) => {
-          if (ind === line.length - 1) {
-            span.classList.remove("has-delim");
-          } else {
-            line[ind].classList.add("has-delim");
-          }
-        });
+      lines.forEach((line) => { 
+        for (let i = 0; i < line.length - 1; i++) {
+          line[i].classList.add("has-delim");
+        }
       });
       const newHtml = lines.reduce((acc, line) => {
-        const lineHtmlStrings = line.map((ele) => ele.outerHTML);
-        const lineHtml =
-          '<div class="row">' + lineHtmlStrings.join("") + "</div>";
-        acc += lineHtml;
+        const lineHtml = line.reduce((htmlString, ele) => htmlString + ele.outerHTML, '');
+        acc += '<div class="row">' + lineHtml + "</div>";
         return acc;
       }, "");
       container.innerHTML = newHtml;
     }
 
-    const renderDots = ()  => {
-      const rows = [...document.querySelectorAll('.row')];
-
-      if (rows.length) {
-        // strategy is to rerender only when necessary
-        const growing = container.offsetWidth > lastWidth;
-        if (growing) {
-          rerenderDots();
-        } else {
-          const rowNotFit = rows.some(row => row.offsetWidth > container.offsetWidth - BULLET_WIDTH);
-          if (rowNotFit) rerenderDots();
-        }
-      } else {
-        // no rows yet, so render
-        rerenderDots();
-      }
-
-      lastWidth = container.offsetWidth;
-    }
-
     let timeout = false, // holder for timeout id
     delay = 250;
     window.addEventListener("load", renderDots);
-    window.addEventListener('resize', function() {
+    window.addEventListener('resize', () => {
       // clear the timeout
       clearTimeout(timeout);
       // start timing for event "completion"
