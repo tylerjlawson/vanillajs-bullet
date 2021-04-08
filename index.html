@@ -16,24 +16,23 @@
   <script>
     const BULLET_WIDTH = 40;
     const container = document.querySelector(".container");
+    let lastWidth = 0;
 
-    const renderDots = ()  => {
+    const rerenderDots = () => {
       const spans = [...document.querySelectorAll("span")];
       const spanLengths = spans.map((span) => span.offsetWidth);
-      let lines = [[]];
-      let currLine = 0;
       let countWidth = 0;
-      spanLengths.forEach((len, ind) => {
+      const lines = spans.reduce((acc, span, ind) => {
+        const len = spanLengths[ind];
         countWidth += len + BULLET_WIDTH;
-        const span = spans[ind];
         if (countWidth <= container.clientWidth) {
-          lines[currLine].push(span);
+          acc[acc.length - 1].push(span);
         } else {
           countWidth = len + BULLET_WIDTH;
-          currLine += 1;
-          lines.push([span]);
+          acc.push([span]);
         }
-      });
+        return acc
+      }, [[]]);
       lines.forEach((line) => {
         line.forEach((span, ind) => {
           if (ind === line.length - 1) {
@@ -53,7 +52,27 @@
       container.innerHTML = newHtml;
     }
 
-    const timeout = false, // holder for timeout id
+    const renderDots = ()  => {
+      const rows = [...document.querySelectorAll('.row')];
+
+      if (rows.length) {
+        // strategy is to rerender only when necessary
+        const growing = container.offsetWidth > lastWidth;
+        if (growing) {
+          rerenderDots();
+        } else {
+          const rowNotFit = rows.some(row => row.offsetWidth > container.offsetWidth - BULLET_WIDTH);
+          if (rowNotFit) rerenderDots();
+        }
+      } else {
+        // no rows yet, so render
+        rerenderDots();
+      }
+
+      lastWidth = container.offsetWidth;
+    }
+
+    let timeout = false, // holder for timeout id
     delay = 250;
     window.addEventListener("load", renderDots);
     window.addEventListener('resize', function() {
