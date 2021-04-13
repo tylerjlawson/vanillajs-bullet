@@ -13,6 +13,29 @@
       <span>Where's my nachos?</span>
     </div>
   </body>
+  <style>
+    body {
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    .container {
+      width: 50%;
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+
+    .row {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    .has-delim::after {
+      content: "•";
+      padding: 0 16px;
+    }
+  </style>
   <script>
     const BULLET_WIDTH = 40;
     const container = document.querySelector(".container");
